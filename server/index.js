@@ -12,6 +12,7 @@ const pages = require('./routes/pages')
 const categories = require('./routes/categories')
 const playlists = require('./routes/playlists')
 const readingHistory = require('./routes/readingHistory')
+const redirects = require('./routes/redirects')
 const errorPages = require('./routes/errors')
 
 const userAuth = requireWithFallback('userAuth')
@@ -20,6 +21,13 @@ const customCsp = requireWithFallback('csp')
 const app = express()
 
 const {preload, postload} = allMiddleware
+
+// The trust proxy flag tells the app to use https for links
+// and redirect urls if it sees indications that the request
+// passed through a proxy and was originally sent using https
+if ((process.env.TRUST_PROXY || '').toUpperCase() === 'TRUE') {
+  app.enable('trust proxy')
+}
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, '../layouts'))
@@ -70,8 +78,16 @@ app.use(playlists)
 
 postload.forEach((middleware) => app.use(middleware))
 
+// if no page has been served, check for a redirect before erroring
+app.use(redirects)
+
 // error handler for rendering the 404 and 500 pages, must go last
 app.use(errorPages)
-app.listen(parseInt(process.env.PORT || '3000', 10))
+
+// If we are called directly, listen on port 3000, otherwise don't
+
+if (require.main === module) {
+  app.listen(parseInt(process.env.PORT || '3000', 10))
+}
 
 module.exports = app

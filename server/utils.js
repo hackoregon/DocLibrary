@@ -1,9 +1,11 @@
 'use strict'
 const fs = require('fs')
 const path = require('path')
+const {promisify} = require('util')
 const yaml = require('js-yaml')
 const { get: deepProp } = require('lodash')
 const merge = require('deepmerge')
+const mime = require('mime-types')
 
 const log = require('./logger')
 
@@ -42,8 +44,11 @@ exports.requireWithFallback = (attemptPath) => {
     return require(customPath)
   } catch (err) {
     // if the file exists but we failed to pull it in, log that error at a warning level
-    const level = fs.existsSync(customPath) ? 'warn' : 'debug'
-    log[level](`Failed pulling in custom file ${attemptPath} @ ${customPath}. Error was:`, err)
+    if (fs.existsSync(customPath)) {
+      log.warn(`Failed pulling in custom file "${attemptPath}" @ ${customPath}. Error was:`, err)
+    } else {
+      log.debug(`No custom file "${attemptPath}" found in ${customPath}. Did you mean to include one?`)
+    }
     return require(serverPath)
   }
 }
@@ -100,4 +105,23 @@ exports.stringTemplate = (configPath, ...args) => {
   }
 
   return ''
+}
+
+// When we stop supporting Node 8, let's drop promisify for fs.promises.readFile
+const readFileAsync = promisify(fs.readFile)
+exports.readFileAsync = readFileAsync
+exports.assetDataURI = async (filePath) => {
+  // If the path starts with `/assets`, look in the app’s public directory
+  const publicPath = filePath.replace(/^\/assets/, '/public')
+
+  // We're using path.posix.basename instead of just path.basename here, because
+  // publicPath is definitely formatted in the POSIX style, and we want
+  // consistent output across *nix and Windows. For reference:
+  // https://nodejs.org/api/path.html#path_windows_vs_posix
+  const mimeType = mime.lookup(path.posix.basename(publicPath))
+  const fullPath = path.join(__dirname, '..', publicPath)
+
+  const data = await readFileAsync(fullPath, { encoding: 'base64' })
+  const src = `data:${mimeType};base64,${data}`
+  return src
 }
