@@ -1,0 +1,27 @@
+// Font imports
+@import url('https://fonts.googleapis.com/css?family=Rubik:300,300i,400,400i,500,500i,700,700i,900,900i|Merriweather:300,300i,400,400i,700,700i,900,900i|Roboto:300,300i,400,400i,700,700i');
+
+ // Example Light Theme
+ $font-branding:                "Rubik", sans-serif;
+ $font-headline:                "Rubik", arial, helvetica, sans-serif;
+ $font-sans:                    "Roboto", sans-serif;
+ $masthead-background:          $primary;
+ $main-homepage-background:     $white;
+ $main-homepage-icon-color:     $primary;
+ $main-homepage-icon-border:    $primary;
+ $main-page-text-color:         $primary;
+ $main-page-btn-color:          $accent;
+ $search-container-background:  $subdued;
+ $search-container-hover:       $subdued;
+ $btn-homepage-background:      $white;
+ $btn-homepage-border:          $black;
+ $btn-default-background:       $white;
+ $btn-default-background-hover: $accent;
+ $btn-default-border:           $black;
+ $btn-default-text-color:       $black;
+ $btn-default-text-hover:       $black;
+ $btn-user-initial:             $white;
+ $elem-link-color:              $white;
+ $elem-active-link-color:       $white;
+ $elem-link-accent:             $accent;
+ $nav-text-color:               $accent;

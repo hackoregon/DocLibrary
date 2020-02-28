@@ -1,0 +1,30 @@
+.playlist-navigation,
+.g-main-content {
+  & > p {
+    margin-bottom: 1em !important;
+  }
+}
+
+.attribution {
+  p {
+    color: $primary !important;
+  }
+}
+
+.logo {
+  filter: invert(100%) grayscale(100%) !important;
+}
+
+.main-item {
+  .logo {
+    filter: brightness(100%) !important;
+  }
+}
+
+#user-profile {
+  a.btn-user-whole {
+    &:hover, &:active, &:target {
+      background: $primary !important;
+    }
+  }
+}
